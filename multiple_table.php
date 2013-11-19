@@ -7,7 +7,7 @@
 <?php
 
     function is_get_variable_valid($varName, $minValue, $maxValue){
-        return isset($_GET[$varName] && $_GET[$varName] > $minValue && $_GET[$varName] < $maxValue);
+        return isset($_GET[$varName]) && $_GET[$varName] > $minValue && $_GET[$varName] < $maxValue;
     }
 
 
@@ -24,7 +24,7 @@
 
     echo '<tr>';
     echo '<td>*</td>';
-    for($j = 1; $j <= $width){
+    for($j = 1; $j <= $width; $j++){
         echo '<td>'.$j.'</td>';
     }
     echo '</tr>';
@@ -37,11 +37,10 @@
                 echo '<td>'.($i * $j).'</td>';
             }
             else{?>
-                <td <?php if($j % 2 == 0) echo 'bgcolor="grey"'?>> <?php echo ($i*$j) ?> </td>;
-            <?php } ?>
+                <td <?php if($j % 2 == 0) echo 'bgcolor="grey"'?>> <?php echo ($i*$j); ?> </td>;
+            <?php }
 
         }
         echo "</tr>";
     }
     echo "</table>";
-?>
