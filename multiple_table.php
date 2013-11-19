@@ -1,5 +1,9 @@
+<head>
+    <link rel="stylesheet" type="text/css" href="style.css">
+</head>
+
 <form action="" method="get">
-    <p>Width <input type="number" name="width" /><?php if(isset($_GET['width']) && !is_get_variable_valid('width',0,1000)) echo 'error number' ?></p>
+    <p>Width <input type="number" name="width" /><?php if(isset($_GET['width']) && !is_get_variable_valid('width',0,1000)) echo '<span class="error_message">Width must be 1 till 1000</span>' ?></p>
     <p>Height <input type="number" name="height" /></p>
     <p><input type="submit" /></p>
 </form>
@@ -26,7 +30,7 @@ echo '<tr>';
 for($i = 1; $i <= $height; $i++){
     echo '<tr>';
     for($j = 1; $j <=$width; $j++){ ?>
-        <td <?php if($j % 2 == 0) echo 'bgcolor="grey"'?>> <?php echo ($i*$j) ?> </td>;
+        <td <?php if($j % 2 == 0) echo 'bgcolor="grey"'?>> <?php echo ($i*$j) ?> </td>
     <?php
 
     }
