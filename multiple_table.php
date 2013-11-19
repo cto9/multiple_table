@@ -6,41 +6,30 @@
 
 <?php
 
-    function is_get_variable_valid($varName, $minValue, $maxValue){
-        return isset($_GET[$varName]) && $_GET[$varName] > $minValue && $_GET[$varName] < $maxValue;
-    }
+function is_get_variable_valid($varName, $minValue, $maxValue){
+    return isset($_GET[$varName]) && $_GET[$varName] > $minValue && $_GET[$varName] < $maxValue;
+}
 
 
-    if(is_get_variable_valid('width',0,1000) && is_get_variable_valid('height',0,1000)){
-        $width = $_GET['width'];
-        $height = $_GET['height'];
-    }
-    else{
-        $width = 10;
-        $height = 10;
-    }
+if(is_get_variable_valid('width',0,1000) && is_get_variable_valid('height',0,1000)){
+    $width = $_GET['width'];
+    $height = $_GET['height'];
+}
+else{
+    $width = 10;
+    $height = 10;
+}
 
-    echo '<table>';
+echo '<table>';
 
+echo '<tr>';
+for($i = 1; $i <= $height; $i++){
     echo '<tr>';
-    echo '<td>*</td>';
-    for($j = 1; $j <= $width; $j++){
-        echo '<td>'.$j.'</td>';
+    for($j = 1; $j <=$width; $j++){ ?>
+        <td <?php if($j % 2 == 0) echo 'bgcolor="grey"'?>> <?php echo ($i*$j) ?> </td>;
+    <?php
+
     }
-    echo '</tr>';
-
-    for($i = 2; $i <= $height; $i++){
-        echo '<tr>';
-        for($j = 1; $j <=$width; $j++){
-
-            if(($i == 1) || ($j == 1)){
-                echo '<td>'.($i * $j).'</td>';
-            }
-            else{?>
-                <td <?php if($j % 2 == 0) echo 'bgcolor="grey"'?>> <?php echo ($i*$j); ?> </td>;
-            <?php }
-
-        }
-        echo "</tr>";
-    }
-    echo "</table>";
+    echo "</tr>";
+}
+echo "</table>";
