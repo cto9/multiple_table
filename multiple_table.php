@@ -5,8 +5,17 @@
 </form>
 
 <?php
-    $width = $_GET['width'];
-    $height = $_GET['height'];
+
+    if((isset($_GET['width']) && isset($_GET['height']))){
+        if($_GET['width'] > 0 && $_GET['width'] < 1000 && $_GET['height'] > 0 && $_GET['height'] < 1000){
+            $width = $_GET['width'];
+            $height = $_GET['height'];
+        }
+    }
+    else{
+        $width = 10;
+        $height = 10;
+    }
 
     echo "<table>";
     for($i = 1; $i <= $width; $i++){
