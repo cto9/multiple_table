@@ -12,7 +12,15 @@
     for($i = 1; $i <= $width; $i++){
         echo "<tr>";
         for($j = 1; $j <=$height; $j++){
-            echo "<td>".($i * $j)."</td>";
+
+            if(($i == 1) || ($j == 1)){
+                echo '<td>'.($i * $j).'</td>';
+            }
+            else if($j % 2){
+                echo '<td bgcolor="grey">'.($i * $j).'</td>';
+            }
+            else
+                echo '<td>'.($i * $j).'</td>';
         }
         echo "</tr>";
     }
