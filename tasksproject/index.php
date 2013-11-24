@@ -96,18 +96,29 @@ if( $_SERVER['REQUEST_METHOD'] == 'POST' ) {
 <table>
 
     <form action="" method="post">
-    <tr><td><label for="taskname">Название задания</label></td> <td><input id="taskname" type="text" name="taskname"/></td></tr>
+        <tr>
+            <td><label for="taskname">Название задания</label></td>
+            <td><input id="taskname" type="text" name="taskname"/></td>
+        </tr>
 
-    <tr><td><label for="description">Описание</label></td> <td><textarea id="description" name="description" cols=60 rows=10></textarea></td></tr>
+        <tr>
+            <td><label for="description">Описание</label></td>
+            <td><textarea id="description" name="description" cols=60 rows=10></textarea></td>
+        </tr>
 
-    <tr><td><label for="tasktype">Тип задания</label></td> <td><select id="tasktype" name="tasktype">
-            <option value="development">Development
-            <option value="planning">Planning
-            <option value="debugging">Debugging
-        </select></td>
-     </tr>
-    <tr><td></td><td align="right"><input type="submit"/></td></tr>
-</form>
+        <tr>
+            <td><label for="tasktype">Тип задания</label></td>
+            <td><select id="tasktype" name="tasktype">
+                    <option value="development">Development
+                    <option value="planning">Planning
+                    <option value="debugging">Debugging
+                </select></td>
+        </tr>
+        <tr>
+            <td></td>
+            <td align="right"><input type="submit"/></td>
+        </tr>
+    </form>
 
 </table>
 
@@ -122,10 +133,9 @@ if( $_SERVER['REQUEST_METHOD'] == 'POST' ) {
 
     $messagesPerPage = 10;
 
-    if(!(empty($_GET['page'])) && ((int)$_GET['page'] > 0)){
+    if( !(empty($_GET['page'])) && ((int)$_GET['page'] > 0) ) {
         $page = $_GET['page'];
-    }
-    else{
+    } else {
         $page = 1;
     }
 
@@ -135,12 +145,12 @@ if( $_SERVER['REQUEST_METHOD'] == 'POST' ) {
 
     $totalPages = intval(($row_count['COUNT(*)'] - 1) / $messagesPerPage) + 1;
 
-    if($page > $totalPages) $page = $totalPages;
+    if( $page > $totalPages ) $page = $totalPages;
 
     $start = $page * $messagesPerPage - $messagesPerPage;
 
     $stmt = $db->query(sprintf('SELECT * FROM tasks ORDER BY creationdate DESC LIMIT %d, %d', $start, $messagesPerPage));
-    while($postrow = $stmt->fetch(PDO::FETCH_ASSOC)){
+    while ($postrow = $stmt->fetch(PDO::FETCH_ASSOC)) {
         echo '<tr>';
         echo '<td>' . $postrow['creationdate'] . '</td>';
         echo '<td>' . $postrow['taskname'] . '</td>';
@@ -155,24 +165,23 @@ if( $_SERVER['REQUEST_METHOD'] == 'POST' ) {
 
 <?php
 
-    $firstPage = '<a href=?page=1>FirstPage</a>';
-    if($page != $totalPages) $lastPage = '<a href=?page='.$totalPages.'>LastPage</a>';
+$firstPage = '<a href=?page=1>FirstPage</a>';
+if( $page != $totalPages ) $lastPage = '<a href=?page=' . $totalPages . '>LastPage</a>';
 
-    if($page+5 > $totalPages){
+if( $page + 5 > $totalPages ) {
 
-        echo $firstPage.'<b>'.$page.'</b>';
-        for($i = $page; $i < $totalPages; $i++){
-            echo ' | <a href=?page='.($i+1).'>'.($i+1).'</a>';
-        }
-        echo $lastPage;
+    echo $firstPage . '<b>' . $page . '</b>';
+    for ($i = $page; $i < $totalPages; $i++) {
+        echo ' | <a href=?page=' . ($i + 1) . '>' . ($i + 1) . '</a>';
     }
-    else{
-        echo $firstPage.'<b>'.$page.'</b>';
-        for($i=$page; $i < $page+5; $i++){
-            echo ' | <a href=?page='.($i+1).'>'.($i+1).'</a>';
-        }
-        echo $lastPage;
+    echo $lastPage;
+} else {
+    echo $firstPage . '<b>' . $page . '</b>';
+    for ($i = $page; $i < $page + 5; $i++) {
+        echo ' | <a href=?page=' . ($i + 1) . '>' . ($i + 1) . '</a>';
     }
+    echo $lastPage;
+}
 ?>
 
 </body>
