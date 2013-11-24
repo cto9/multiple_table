@@ -121,21 +121,25 @@ if( $_SERVER['REQUEST_METHOD'] == 'POST' ) {
     <?php
 
     $messagesPerPage = 10;
-//    $page = $_GET['page'];
-//    $page = 2;
-    $page = empty($_GET['page']) ? 1 : $_GET['page'];
 
-    $tmp = $db->query('SELECT * FROM tasks');
-    $row_count = $tmp->rowCount();
+    if(!(empty($_GET['page'])) && ((int)$_GET['page'] > 0)){
+        $page = $_GET['page'];
+    }
+    else{
+        $page = 1;
+    }
 
-    $totalPages = intval(($row_count - 1) / $messagesPerPage) + 1;
+    $tmp = $db->prepare('SELECT COUNT(*) FROM tasks');
+    $tmp->execute();
+    $row_count = $tmp->fetch(PDO::FETCH_ASSOC);
 
-    if(empty($page) || $page < 0) $page = 1;
+    $totalPages = intval(($row_count['COUNT(*)'] - 1) / $messagesPerPage) + 1;
+
     if($page > $totalPages) $page = $totalPages;
 
     $start = $page * $messagesPerPage - $messagesPerPage;
 
-    $stmt = $db->query(sprintf('SELECT * FROM tasks ORDER BY creationdate DESC LIMIT %s, %s', $start, $messagesPerPage));
+    $stmt = $db->query(sprintf('SELECT * FROM tasks ORDER BY creationdate DESC LIMIT %d, %d', $start, $messagesPerPage));
     while($postrow = $stmt->fetch(PDO::FETCH_ASSOC)){
         echo '<tr>';
         echo '<td>' . $postrow['creationdate'] . '</td>';
@@ -145,41 +149,12 @@ if( $_SERVER['REQUEST_METHOD'] == 'POST' ) {
         echo '</tr>';
     }
 
-
-/*    for($i = 0; $i < $messagesPerPage; $i++)
-    {
-        echo "<tr>
-         <td>".$postrow[$i]['creationdate']."</td>
-         <td>".$postrow[$i]['taskname']."</td>
-         <td>".$postrow[$i]['description']."</td>
-         <td>".$postrow[$i]['tasktype']."</td></tr>";
-    }
-*/
-
-    /* code for insert 100 tasks for test db
-        $data['tasktype'] = 'planning';
-        $data['description'] = 'qwertty';
-        for($i=0;$i<100;$i++){
-            $data['taskname'] = 'TaskNumber'.$i;
-            $messageOut[] = insertTask($data,$db);
-        }
-    */
-/*    $stmt = $db->query('SELECT * FROM tasks ORDER BY creationdate DESC');
-    while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-        echo '<tr>';
-        echo '<td>' . $row['creationdate'] . '</td>';
-        echo '<td>' . $row['taskname'] . '</td>';
-        echo '<td>' . $row['description'] . '</td>';
-        echo '<td>' . $row['tasktype'] . '</td>';
-        echo '</tr>';
-    }
-*/
     ?>
 
 </table>
 
 <?php
-//    if($page != 1) $firstPage = '<a href=?page=1>FirstPage</a>';
+
     $firstPage = '<a href=?page=1>FirstPage</a>';
     if($page != $totalPages) $lastPage = '<a href=?page='.$totalPages.'>LastPage</a>';
 
@@ -192,13 +167,11 @@ if( $_SERVER['REQUEST_METHOD'] == 'POST' ) {
         echo $lastPage;
     }
     else{
-
-    $next5Pages = ' | <a href=?page='.($page+5).'>'.($page+5).'</a>';
-    $next4Pages = ' | <a href=?page='.($page+4).'>'.($page+4).'</a>';
-    $next3Pages = ' | <a href=?page='.($page+3).'>'.($page+3).'</a>';
-    $next2Pages = ' | <a href=?page='.($page+2).'>'.($page+2).'</a>';
-    $next1Pages = ' | <a href=?page='.($page+1).'>'.($page+1).'</a>';
-    echo $firstPage.'<b>'.$page.'</b>'.$next1Pages.$next2Pages.$next3Pages.$next4Pages.$next5Pages.$lastPage;
+        echo $firstPage.'<b>'.$page.'</b>';
+        for($i=$page; $i < $page+5; $i++){
+            echo ' | <a href=?page='.($i+1).'>'.($i+1).'</a>';
+        }
+        echo $lastPage;
     }
 ?>
 
