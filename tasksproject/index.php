@@ -92,7 +92,6 @@ if( $_SERVER['REQUEST_METHOD'] == 'POST' ) {
 
 ?>
 
-
 <table>
 
     <form action="" method="post">
@@ -122,6 +121,28 @@ if( $_SERVER['REQUEST_METHOD'] == 'POST' ) {
 
 </table>
 
+<?php
+
+$messagesPerPage = 10;
+
+if( !(empty($_GET['page'])) && ((int)$_GET['page'] > 0) ) {
+$page = $_GET['page'];
+} else {
+$page = 1;
+}
+
+$tmp = $db->prepare('SELECT COUNT(*) FROM tasks');
+$tmp->execute();
+$row_count = $tmp->fetch(PDO::FETCH_ASSOC);
+
+$totalPages = (int)(($row_count['COUNT(*)'] - 1) / $messagesPerPage) + 1;
+
+if( $page > $totalPages ) $page = $totalPages;
+
+$start = $page * $messagesPerPage - $messagesPerPage;
+
+?>
+
 <table border="1">
     <tr>
         <td>Дата создания</td>
@@ -129,25 +150,10 @@ if( $_SERVER['REQUEST_METHOD'] == 'POST' ) {
         <td>Описание</td>
         <td>Тип задания</td>
     </tr>
+
     <?php
 
-    $messagesPerPage = 10;
 
-    if( !(empty($_GET['page'])) && ((int)$_GET['page'] > 0) ) {
-        $page = $_GET['page'];
-    } else {
-        $page = 1;
-    }
-
-    $tmp = $db->prepare('SELECT COUNT(*) FROM tasks');
-    $tmp->execute();
-    $row_count = $tmp->fetch(PDO::FETCH_ASSOC);
-
-    $totalPages = intval(($row_count['COUNT(*)'] - 1) / $messagesPerPage) + 1;
-
-    if( $page > $totalPages ) $page = $totalPages;
-
-    $start = $page * $messagesPerPage - $messagesPerPage;
 
     $stmt = $db->query(sprintf('SELECT * FROM tasks ORDER BY creationdate DESC LIMIT %d, %d', $start, $messagesPerPage));
     while ($postrow = $stmt->fetch(PDO::FETCH_ASSOC)) {
@@ -166,22 +172,18 @@ if( $_SERVER['REQUEST_METHOD'] == 'POST' ) {
 <?php
 
 $firstPage = '<a href=?page=1>FirstPage</a>';
-if( $page != $totalPages ) $lastPage = '<a href=?page=' . $totalPages . '>LastPage</a>';
 
 if( $page + 5 > $totalPages ) {
-
-    echo $firstPage . '<b>' . $page . '</b>';
-    for ($i = $page; $i < $totalPages; $i++) {
-        echo ' | <a href=?page=' . ($i + 1) . '>' . ($i + 1) . '</a>';
-    }
-    echo $lastPage;
+    $lastIteration = $totalPages;
 } else {
-    echo $firstPage . '<b>' . $page . '</b>';
-    for ($i = $page; $i < $page + 5; $i++) {
-        echo ' | <a href=?page=' . ($i + 1) . '>' . ($i + 1) . '</a>';
-    }
-    echo $lastPage;
+    $lastIteration = $page + 5;
 }
+echo $firstPage . '<b>' . $page . '</b>';
+for ($i = $page; $i < $lastIteration; $i++) {
+    echo ' | <a href=?page=' . ($i + 1) . '>' . ($i + 1) . '</a>';
+}
+echo ($page != $totalPages ) ? '<a href=?page=' . $totalPages . '>LastPage</a>' : '<a href=?page=' .$page. '>LastPage</a>';
+
 ?>
 
 </body>
