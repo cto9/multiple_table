@@ -126,9 +126,9 @@ if( $_SERVER['REQUEST_METHOD'] == 'POST' ) {
 $messagesPerPage = 10;
 
 if( !(empty($_GET['page'])) && ((int)$_GET['page'] > 0) ) {
-$page = $_GET['page'];
+    $page = $_GET['page'];
 } else {
-$page = 1;
+    $page = 1;
 }
 
 $tmp = $db->prepare('SELECT COUNT(*) FROM tasks');
@@ -153,8 +153,6 @@ $start = $page * $messagesPerPage - $messagesPerPage;
 
     <?php
 
-
-
     $stmt = $db->query(sprintf('SELECT * FROM tasks ORDER BY creationdate DESC LIMIT %d, %d', $start, $messagesPerPage));
     while ($postrow = $stmt->fetch(PDO::FETCH_ASSOC)) {
         echo '<tr>';
@@ -171,18 +169,13 @@ $start = $page * $messagesPerPage - $messagesPerPage;
 
 <?php
 
-$firstPage = '<a href=?page=1>FirstPage</a>';
+$lastIteration = ($page + 5 > $totalPages) ? $totalPages : $page + 5;
 
-if( $page + 5 > $totalPages ) {
-    $lastIteration = $totalPages;
-} else {
-    $lastIteration = $page + 5;
-}
-echo $firstPage . '<b>' . $page . '</b>';
+echo '<a href=?page=1>FirstPage</a>' . '<b>' . $page . '</b>';
 for ($i = $page; $i < $lastIteration; $i++) {
     echo ' | <a href=?page=' . ($i + 1) . '>' . ($i + 1) . '</a>';
 }
-echo ($page != $totalPages ) ? '<a href=?page=' . $totalPages . '>LastPage</a>' : '<a href=?page=' .$page. '>LastPage</a>';
+echo ($page != $totalPages) ? '<a href=?page=' . $totalPages . '>LastPage</a>' : '<a href=?page=' . $page . '>LastPage</a>';
 
 ?>
 
