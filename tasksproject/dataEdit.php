@@ -15,26 +15,26 @@ include 'myFunctions.php';
 $currentID = $_GET['id'];
 checkID($currentID, $db);
 
-    $stmt = $db->prepare(sprintf('SELECT * FROM tasks WHERE id=%d', $currentID));
-    $stmt->execute();
-    $taskEdit = $stmt->fetch(PDO::FETCH_ASSOC);
+$stmt = $db->prepare(sprintf('SELECT * FROM tasks WHERE id=%d', $currentID));
+$stmt->execute();
+$taskEdit = $stmt->fetch(PDO::FETCH_ASSOC);
 
-    if( $_SERVER['REQUEST_METHOD'] == 'POST' ) {
+if( $_SERVER['REQUEST_METHOD'] == 'POST' ) {
 
-        $data = getDataFromRequest($_POST);
-        $validationResult = validateData($data, $db);
-        $messageOut = array();
+    $data = getDataFromRequest($_POST);
+    $validationResult = validateData($data, $db);
+    $messageOut = array();
 
-        if( $validationResult['success'] == true ) {
-            insertTaskLog($currentID, $data, $db);
-            header("Location:index.php");
-        } else {
-            $messageOut = $validationResult['messages'];
-            foreach ($messageOut as $messages) {
-                echo '<span class = "error_message">', $messages['type'], ': ', $messages['text'], '</span>';
-            }
+    if( $validationResult['success'] == true ) {
+        insertTaskLog($currentID, $data, $db);
+        header("Location:index.php");
+    } else {
+        $messageOut = $validationResult['messages'];
+        foreach ($messageOut as $messages) {
+            echo '<span class = "error_message">', $messages['type'], ': ', $messages['text'], '</span>';
         }
     }
+}
 
 
 ?>
@@ -57,15 +57,20 @@ checkID($currentID, $db);
         <tr>
             <td><label for="tasktype">Тип задания</label></td>
             <td><select id="tasktype" name="tasktype">
-                    <option value="development" <?php
-                        if( $taskEdit['tasktype'] == "development" ) echo "selected";
-                        ?> >Development
-                    <option value="planning" <?php
-                        if( $taskEdit['tasktype'] == "planning" ) echo "selected";
-                        ?> >Planning
-                    <option value="debugging" <?php
-                        if( $taskEdit['tasktype'] == "debugging" ) echo "selected";
-                        ?>>Debugging
+
+                    <?php
+                    $taskTypeSelected = array('development', 'planning', 'debugging');
+                    foreach ($taskTypeSelected as $typeSelect) {
+                        echo '<option value="', $typeSelect, '"';
+                        $tmpString = "";
+                        if( $taskEdit['tasktype'] == $typeSelect )
+                            $tmpString = $tmpString . "selected";
+                        echo $tmpString . '>' . $typeSelect;
+
+                    }
+
+                    ?>
+
                 </select></td>
         </tr>
         <tr>

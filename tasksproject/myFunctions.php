@@ -55,19 +55,19 @@ function insertTaskLog($currentID, $data, $db)
     $oldData = $obj->fetch(PDO::FETCH_ASSOC);
 
     if( $oldData['taskname'] != $data['taskname'] ) {
-        $logMessage = sprintf("Поле taskname в задании с id = %d было изменено с %s на %s", $currentID, $oldData['taskname'], $data['taskname']);
+        $logMessage = sprintf("Поле taskname было изменено с %s на %s", $oldData['taskname'], $data['taskname']);
         $stt = $db->prepare('INSERT INTO task_log( task_id, modifiedDate, logMessage ) VALUES(:currentID, NOW(), :logMessage )');
         $stt->execute(array(':currentID' => $currentID, ':logMessage' => $logMessage));
     }
 
     if( $oldData['description'] != $data['description'] ) {
-        $logMessage = sprintf('Поле description в задании с id = %d было изменено с %s на %s', $currentID, $oldData['description'], $data['description']);
+        $logMessage = sprintf('Поле description было изменено с %s на %s', $oldData['description'], $data['description']);
         $stt = $db->prepare('INSERT INTO task_log( task_id, modifiedDate, logMessage ) VALUES(:currentID, NOW(), :logMessage )');
         $stt->execute(array(':currentID' => $currentID, ':logMessage' => $logMessage));
     }
 
     if( $oldData['tasktype'] != $data['tasktype'] ) {
-        $logMessage = sprintf('Поле tasktype в задании с id = %d было изменено с %s на %s', $currentID, $oldData['taskytpe'], $data['tasktypel']);
+        $logMessage = sprintf('Поле tasktype было изменено с %s на %s', $oldData['taskytpe'], $data['tasktypel']);
         $stt = $db->prepare('INSERT INTO task_log( task_id, modifiedDate, logMessage ) VALUES(:currentID, NOW(), :logMessage )');
         $stt->execute(array(':currentID' => $currentID, ':logMessage' => $logMessage));
     }
