@@ -10,65 +10,8 @@
 
 <?php
 
-function getDataFromRequest($datapost)
-{
-    $taskname = empty($datapost['taskname']) ? "" : trim($datapost['taskname']);
-    $description = empty($datapost['taskname']) ? "" : trim($datapost['description']);
-    $tasktype = $datapost['tasktype'];
-    return array('taskname' => $taskname, 'description' => $description, 'tasktype' => $tasktype);
-}
-
-function validateData($data, $db)
-{
-
-    $validationRes = array('success' => true, 'messages' => array());
-    $taskTypeVariants = array('development', 'planning', 'debugging');
-
-    if( empty($data['taskname']) ) {
-        addErrorMessage($validationRes, 'Название задачи не может быть пустым');
-    }
-
-    $nameValid = $db->prepare('SELECT COUNT(*) FROM tasks WHERE taskname = :taskname');
-    $nameValid->execute(array('taskname' => $data['taskname']));
-    $checkUniqName = $nameValid->fetch(PDO::FETCH_ASSOC);
-
-    if( $checkUniqName['COUNT(*)'] == 1 ) {
-        addErrorMessage($validationRes, sprintf('Задание с именем %s уже существует', $data['taskname']));
-    }
-
-    if( !in_array($data['tasktype'], $taskTypeVariants) ) {
-        addErrorMessage($validationRes, 'Неверный тип задания');
-    }
-
-    return $validationRes;
-}
-
-function addErrorMessage(&$validationResult, $message)
-{
-    $validationResult['success'] = false;
-    $validationResult['messages'][] = array('type' => 'Error', 'text' => $message);
-}
-
-function insertTask($data, $db)
-{
-    $st = $db->prepare('INSERT INTO tasks( creationdate, taskname, description, tasktype ) VALUES( NOW(), :taskname, :description, :tasktype )');
-    $st->execute(array(':taskname' => $data['taskname'], ':description' => $data['description'], ':tasktype' => $data['tasktype']));
-
-    $insertId = $db->lastInsertId();
-    return array('type' => 'success', 'message' => sprintf('Задание с id = %s вставлено в БД', $insertId));
-}
-
-$host = "localhost";
-$user = "root";
-$password = "root";
-$database = "tasksproject";
-
-try {
-    $db = new PDO(sprintf('mysql:host=%s;dbname=%s', $host, $database), $user, $password);
-} catch (PDOException $e) {
-    echo '<span class="error_message">Error!: ' . $e->getMessage() . "<br/>";
-    die();
-}
+include 'dbConnect.php';
+include 'myFunctions.php';
 
 if( $_SERVER['REQUEST_METHOD'] == 'POST' ) {
 
@@ -160,6 +103,7 @@ $start = $page * $messagesPerPage - $messagesPerPage;
         echo '<td>' . $postrow['taskname'] . '</td>';
         echo '<td>' . $postrow['description'] . '</td>';
         echo '<td>' . $postrow['tasktype'] . '</td>';
+        echo '<td> <a href="dataEdit.php?id='.$postrow['id'].'"> Edit </td> ';
         echo '</tr>';
     }
 
