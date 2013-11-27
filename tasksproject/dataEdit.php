@@ -13,23 +13,28 @@ include 'dbConnect.php';
 include 'myFunctions.php';
 
 $currentID = $_GET['id'];
-echo $currentID;
+checkID($currentID, $db);
 
-$stmt = $db->query(sprintf('SELECT * FROM tasks WHERE id=%d',$currentID));
-$taskEdit = $stmt->fetch(PDO::FETCH_ASSOC);
+    $stmt = $db->prepare(sprintf('SELECT * FROM tasks WHERE id=%d', $currentID));
+    $stmt->execute();
+    $taskEdit = $stmt->fetch(PDO::FETCH_ASSOC);
 
-if($_SERVER['REQUEST_METHOD'] == 'POST'){
+    if( $_SERVER['REQUEST_METHOD'] == 'POST' ) {
 
-    $data = getDataFromRequest($_POST);
-    $validationResult = validateData($data, $db);
+        $data = getDataFromRequest($_POST);
+        $validationResult = validateData($data, $db);
+        $messageOut = array();
 
-    if( $validationResult['success'] == true ) {
-        insertTaskLog($currentID, $data, $db);
-        header("Location:index.php");
-    } else {
-        echo 'ERROR';
+        if( $validationResult['success'] == true ) {
+            insertTaskLog($currentID, $data, $db);
+            header("Location:index.php");
+        } else {
+            $messageOut = $validationResult['messages'];
+            foreach ($messageOut as $messages) {
+                echo '<span class = "error_message">', $messages['type'], ': ', $messages['text'], '</span>';
+            }
+        }
     }
-}
 
 
 ?>
@@ -40,25 +45,26 @@ if($_SERVER['REQUEST_METHOD'] == 'POST'){
     <form action="" method="post">
         <tr>
             <td><label for="taskname">Название задания</label></td>
-            <td><input id="taskname" type="text" name="taskname" value="<?php echo $taskEdit['taskname']?>"/></td>
+            <td><input id="taskname" type="text" name="taskname" value="<?php echo $taskEdit['taskname'] ?>"/></td>
         </tr>
 
         <tr>
             <td><label for="description">Описание</label></td>
-            <td><textarea id="description" name="description" cols=60 rows=10><?php echo $taskEdit['description']?></textarea></td>
+            <td><textarea id="description" name="description" cols=60
+                          rows=10><?php echo $taskEdit['description']?></textarea></td>
         </tr>
 
         <tr>
             <td><label for="tasktype">Тип задания</label></td>
             <td><select id="tasktype" name="tasktype">
                     <option value="development" <?php
-                            if($taskEdit['tasktype'] == "development") echo "selected";
+                        if( $taskEdit['tasktype'] == "development" ) echo "selected";
                         ?> >Development
                     <option value="planning" <?php
-                            if($taskEdit['tasktype'] == "planning") echo "selected";
+                        if( $taskEdit['tasktype'] == "planning" ) echo "selected";
                         ?> >Planning
                     <option value="debugging" <?php
-                            if($taskEdit['tasktype'] == "debugging") echo "selected";
+                        if( $taskEdit['tasktype'] == "debugging" ) echo "selected";
                         ?>>Debugging
                 </select></td>
         </tr>

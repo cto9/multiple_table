@@ -48,24 +48,25 @@ function insertTask($data, $db)
     return array('type' => 'success', 'message' => sprintf('Задание с id = %s вставлено в БД', $insertId));
 }
 
-function insertTaskLog($currentID, $data, $db){
+function insertTaskLog($currentID, $data, $db)
+{
 
-    $obj = $db->query(sprintf('SELECT * FROM tasks WHERE id = %d',$currentID));
+    $obj = $db->query(sprintf('SELECT * FROM tasks WHERE id = %d', $currentID));
     $oldData = $obj->fetch(PDO::FETCH_ASSOC);
 
-    if($oldData['taskname'] != $data['taskname']){
+    if( $oldData['taskname'] != $data['taskname'] ) {
         $logMessage = sprintf("Поле taskname в задании с id = %d было изменено с %s на %s", $currentID, $oldData['taskname'], $data['taskname']);
         $stt = $db->prepare('INSERT INTO task_log( task_id, modifiedDate, logMessage ) VALUES(:currentID, NOW(), :logMessage )');
         $stt->execute(array(':currentID' => $currentID, ':logMessage' => $logMessage));
     }
 
-    if($oldData['description'] != $data['description']){
+    if( $oldData['description'] != $data['description'] ) {
         $logMessage = sprintf('Поле description в задании с id = %d было изменено с %s на %s', $currentID, $oldData['description'], $data['description']);
         $stt = $db->prepare('INSERT INTO task_log( task_id, modifiedDate, logMessage ) VALUES(:currentID, NOW(), :logMessage )');
         $stt->execute(array(':currentID' => $currentID, ':logMessage' => $logMessage));
     }
 
-    if($oldData['tasktype'] != $data['tasktype']){
+    if( $oldData['tasktype'] != $data['tasktype'] ) {
         $logMessage = sprintf('Поле tasktype в задании с id = %d было изменено с %s на %s', $currentID, $oldData['taskytpe'], $data['tasktypel']);
         $stt = $db->prepare('INSERT INTO task_log( task_id, modifiedDate, logMessage ) VALUES(:currentID, NOW(), :logMessage )');
         $stt->execute(array(':currentID' => $currentID, ':logMessage' => $logMessage));
@@ -75,4 +76,23 @@ function insertTaskLog($currentID, $data, $db){
     $st->execute(array(':taskname' => $data['taskname'], ':description' => $data['description'], ':tasktype' => $data['tasktype'], ':currentID' => $currentID));
 
     return;
+}
+
+function checkID($id, $db)
+{
+
+    if( !(empty($id)) || ((int)$id > 0) ) {
+        $tmp = $db->prepare(sprintf('SELECT COUNT(*) FROM tasks WHERE id=%d', $id));
+        $tmp->execute();
+        $row_count = $tmp->fetch(PDO::FETCH_ASSOC);
+
+        if( $row_count['COUNT(*)'] == 0 ) {
+            echo 'Задания с указанным id не существует';
+            return 0;
+        }
+        return 1;
+    } else {
+        echo 'Не правильный id';
+        return 0;
+    }
 }
