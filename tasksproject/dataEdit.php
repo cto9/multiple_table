@@ -13,7 +13,16 @@ include 'dbConnect.php';
 include 'myFunctions.php';
 
 $currentID = $_GET['id'];
-checkID($currentID, $db);
+$idValid = checkID($currentID, $db);
+
+if($idValid['success'] == false){
+    header("HTTP/1.1 404 Not Found");
+    echo file_get_contents("404.html");
+    foreach($idValid as $errorMes){
+        echo '<span class = "error_message">', $errorMes, '</span>';
+    }
+    exit();
+}
 
 $stmt = $db->prepare(sprintf('SELECT * FROM tasks WHERE id=%d', $currentID));
 $stmt->execute();
@@ -35,7 +44,6 @@ if( $_SERVER['REQUEST_METHOD'] == 'POST' ) {
         }
     }
 }
-
 
 ?>
 

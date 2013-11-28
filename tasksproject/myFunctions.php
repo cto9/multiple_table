@@ -81,18 +81,25 @@ function insertTaskLog($currentID, $data, $db)
 function checkID($id, $db)
 {
 
-    if( !(empty($id)) || ((int)$id > 0) ) {
+    $idMessagesError = array('success' => true, 'text' => array());
+
+    if( (empty($id)) || ((int)$id < 1) ){
+        $idMessagesError['success'] = false;
+        $idMessagesError['text'] = "Не правильный id";
+        return $idMessagesError;
+    }
+
         $tmp = $db->prepare(sprintf('SELECT COUNT(*) FROM tasks WHERE id=%d', $id));
         $tmp->execute();
         $row_count = $tmp->fetch(PDO::FETCH_ASSOC);
 
         if( $row_count['COUNT(*)'] == 0 ) {
-            echo 'Задания с указанным id не существует';
-            return 0;
+            //echo 'Задания с указанным id не существует';
+            $idMessagesError['text'][] = "Задания с указанным id не существует";
+            //return false;
+            return $idMessagesError;
         }
-        return 1;
-    } else {
-        echo 'Не правильный id';
-        return 0;
-    }
+
+        return $idMessagesError;
+
 }
